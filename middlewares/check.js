@@ -1,10 +1,9 @@
 import jwt from '../utils/jwt'
 class Check {
-  checkLogin(req, res, next) {
+  async checkLogin(req, res, next) {
     let { url = '' } = req
-    console.log(url)
     if (url.includes('/user/')) {
-      let { token } = req.header
+      let { token } = req.headers
       if (token) {
         let result = jwt.verifyToken(token)
         let { uid } = result

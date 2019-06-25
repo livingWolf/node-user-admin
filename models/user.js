@@ -1,6 +1,5 @@
 import connect from '../config/mysql'
 import jwt from '../utils/jwt'
-import check from '../middlewares/check'
 
 class User {
   async getUserList(req, res, next) {
@@ -26,7 +25,7 @@ class User {
       })
       .join(' and ')
     let sql = `select * from node_user${condition.length ? ' where ' + condition : ''}`
-    connect.querySQL(sql, check.checkLogin(req, res, next), function(err, rows, fields) {
+    connect.querySQL(sql, function(err, rows, fields) {
       if (err) throw err
       else {
         res.send({

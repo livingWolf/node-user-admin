@@ -26,6 +26,7 @@ class Jwt {
    */
   verifyToken(token) {
     let cert = fs.readFileSync(path.join(__dirname, '../config/rsa_public_key.pem'))
+    let res = {}
     try {
       let result = jwt.verify(token, cert, { algorithms: ['RS256'] }) || {}
       let { exp = 0 } = result,
