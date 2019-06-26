@@ -19,7 +19,7 @@ class User {
       .filter(item1 => data[item1] !== undefined)
       .map(item => `${item}='${data[item]}'`)
       .join(' and ')
-    let sql = `select ${userParams.join(',')} from sys_user L${
+    let sql = `select ${userParams.join(',')} from sys_user ${
       conditions.length ? ' where ' + conditions : ''
     }`
     return sql
@@ -28,8 +28,9 @@ class User {
     let conditions = userParams
       .filter(item1 => data[item1] !== undefined)
       .map(item => `${item}='${data[item]}'`)
-      .join(' and ')
+      .join(' , ')
     let sql = `insert into sys_user set ${conditions}`
+    return sql
   }
 }
 

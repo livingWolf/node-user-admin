@@ -13,11 +13,14 @@ const pool = mysql.createPool({
   ...config.mysql
 })
 
-exports.querySQL = function(sql, callback) {
-  pool.getConnection(function(err, conn) {
-    conn.query(sql, function(err, rows, fields) {
-      callback(err, rows, fields)
-      conn.release()
+exports.querySQL = sql => {
+  return new Promise((resolve, reject) => {
+    pool.getConnection((err, conn) => {
+      conn.query(sql, (err, rows) => {
+        if (err) reject(err)
+        else resolve(rows)
+        conn.release()
+      })
     })
   })
 }
