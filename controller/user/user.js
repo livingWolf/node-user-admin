@@ -6,6 +6,7 @@ class User {
   constructor() {
     this.register = this.register.bind(this)
     this.login = this.login.bind(this)
+    this.updateUser = this.updateUser.bind(this)
   }
   /**
    * 查询用户
@@ -64,7 +65,7 @@ class User {
             message: '用户密码输入错误'
           })
         } else {
-          let token = await jwt.generateToken(lists[0].id)
+          let token = await jwt.generateToken({ uid: lists[0].id })
           res.status(200).send({
             code: 0,
             data: {
@@ -117,6 +118,73 @@ class User {
       res.status(500).send({
         error
       })
+    }
+  }
+  /**
+   * 修改客户信息
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   */
+  async updateUser(req, res, next) {
+    let request = req.body
+    let { id, username, password } = request
+    if (!id) {
+      res.status(500).send({
+        message: '缺失id'
+      })
+      return
+    }
+    if (!password) {
+      res.status(500).send({
+        message: '请填写密码'
+      })
+      return
+    }
+    let initData = await this.queryUser({ id })
+    if (username != initData.username) {
+      res.status(500).send({
+        message: '用户名不可修改'
+      })
+      return
+    }
+    try {
+      let sql = await userModel.update(request)
+      let result = await connect.querySQL(sql)
+      res.status(200).send({
+        code: 0,
+        data: {
+          message: '修改用户信息成功'
+        }
+      })
+    } catch (error) {
+      res.status(500).send({ error })
+    }
+  }
+  /**
+   * 删除客户
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   */
+  async deleteUser(req, res, next) {
+    let request = req.body
+    let { id } = request
+    if (!id) {
+      res.status(500).send({
+        message: '缺失id'
+      })
+      return
+    }
+    try {
+      let sql = userModel.delete({ id })
+      let result = connect.querySQL(sql)
+      res.status(200).send({
+        code: 0,
+        message: '删除用户成功'
+      })
+    } catch (error) {
+      res.status(500).send({ error })
     }
   }
 }
