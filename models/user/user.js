@@ -48,10 +48,6 @@ class User {
     let sql = `update sys_user set delete_flag=1 where id = '${data.id}'`
     return sql
   }
-  setRole(data) {
-    let sql = `insert into sys_user_role (userId,roleId) values (${data.userId},${data.roleId}})`
-    return sql
-  }
 }
 
 export default new User()

@@ -3,6 +3,8 @@ import roleModel from '../../models/role/role'
 class role {
   constructor() {
     this.addRole = this.addRole.bind(this)
+    this.deleteRole = this.deleteRole.bind(this)
+    this.updateRole = this.updateRole.bind(this)
   }
   /**
    * 查询角色
@@ -98,12 +100,70 @@ class role {
       })
     }
     try {
-      let sql = roleModel.updateRole({ roleId, delete_flag: 1 })
-      let result = await connect.querySQL(sql)
-      res.status(200).send({
-        code: 0,
-        message: '删除成功'
+      let list = await this.queryRole({ roleId })
+      if (list && list.length > 0) {
+        let sql = roleModel.deleteRole({ roleId })
+        let result = await connect.querySQL(sql)
+        res.status(200).send({
+          code: 0,
+          message: '删除成功'
+        })
+      } else {
+        res.status(500).send({
+          code: 0,
+          message: '无此角色'
+        })
+      }
+    } catch (error) {
+      res.status(500).send({ error })
+    }
+  }
+  /**
+   * 修改role
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   */
+  async updateRole(req, res, next) {
+    let request = req.body
+    let { roleId, role, roleName } = request
+    if (!roleId) {
+      res.status(500).send({
+        code: '1',
+        message: '缺失roleId'
       })
+      return
+    }
+    if (!roleName) {
+      res.status(500).send({
+        code: '1',
+        message: '缺失roleName'
+      })
+      return
+    }
+    try {
+      let list = await this.queryRole({ roleId })
+      if (list && list.length > 0) {
+        let _role = list[0].role
+        if (_role !== role) {
+          res.status(500).send({
+            code: 0,
+            message: '不能修编role角色代号'
+          })
+          return
+        }
+        let sql = roleModel.updateRole({ ...request })
+        let result = await connect.querySQL(sql)
+        res.status(200).send({
+          code: 0,
+          message: '修改成功'
+        })
+      } else {
+        res.status(500).send({
+          code: 0,
+          message: '无此角色'
+        })
+      }
     } catch (error) {
       res.status(500).send({ error })
     }
