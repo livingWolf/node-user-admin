@@ -8,10 +8,30 @@ class Menu {
    * @param {*} res
    * @param {*} next
    */
+  async queryIsMenu(data) {
+    try {
+      let sql = menuModel.query(data)
+      let result = await connect.querySQL(sql)
+      return result
+    } catch (error) {
+      return false
+    }
+  }
+  /**
+   * 查询菜单
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   */
   async query(req, res, next) {
     let request = req.body
     try {
-      
+      let sql = menuModel.query({ ...request })
+      let result = await connect.querySQL(sql)
+      res.status(200).send({
+        code: 0,
+        data: result
+      })
     } catch (error) {
       res.status(500).send({ error })
     }
@@ -49,13 +69,53 @@ class Menu {
    * @param {*} res
    * @param {*} next
    */
-  async delete(req, res, next) {}
+  async delete(req, res, next) {
+    let request = req.body
+    let { menuId } = request
+    if (!menuId) {
+      res.status(500).send({
+        code: 1,
+        message: '缺失menuId'
+      })
+      return
+    }
+    try {
+      let sql = menuModel.delete({ menuId })
+      let result = await connect.querySQL(sql)
+      res.status(200).send({
+        code: 0,
+        message: '删除成功'
+      })
+    } catch (error) {
+      res.status(500).send({ error })
+    }
+  }
   /**
    * 修改菜单
    * @param {*} req
    * @param {*} res
    * @param {*} next
    */
-  async update(req, res, next) {}
+  async update(req, res, next) {
+    let request = req.body
+    let { menuId } = request
+    if (!menuId) {
+      res.status(500).send({
+        code: 1,
+        message: '缺失menuId'
+      })
+      return
+    }
+    try {
+      let sql = menuModel.update({ ...request })
+      let result = await connect.querySQL(sql)
+      res.status(200).send({
+        code: 0,
+        message: '修改成功'
+      })
+    } catch (error) {
+      res.status(500).send({ error })
+    }
+  }
 }
 export default new Menu()
